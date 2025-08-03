@@ -1,0 +1,10 @@
+torch
+torchvision
+ftfy
+regex
+tqdm
+requests
+Pillow
+scikit-learn
+numpy
+git+https://github.com/openai/CLIP.git 
