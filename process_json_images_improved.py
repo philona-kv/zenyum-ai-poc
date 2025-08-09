@@ -28,7 +28,6 @@ model, preprocess = clip.load("ViT-B/32", device=device)
 print(f"✅ CLIP model loaded on {device}")
 
 def download_google_drive_file(file_id, output_path):
-    """Download file from Google Drive using file ID"""
     try:
         urls_to_try = [
             f"https://drive.google.com/uc?export=download&id={file_id}",
@@ -81,7 +80,6 @@ def download_google_drive_file(file_id, output_path):
         return False
 
 def download_image(url, output_path):
-    """Download image from URL and save to output_path"""
     try:
         if 'drive.google.com' in url and 'id=' in url:
             file_id = url.split('id=')[1].split('&')[0]
@@ -116,17 +114,6 @@ def download_image(url, output_path):
         return False
 
 def crop_and_rotate_image(image_path, crop_properties, rotation_degrees=0):
-    """
-    Crop and rotate an image based on properties from JSON
-    
-    Args:
-        image_path (str): Path to the image file
-        crop_properties (dict): Dictionary containing crop offsets (angle parameter ignored)
-        rotation_degrees (float): Rotation angle in degrees from the main rotation property
-    
-    Returns:
-        PIL.Image: Processed image or None if failed
-    """
     try:
         image = Image.open(image_path).convert("RGB")
         original_width, original_height = image.size
@@ -158,7 +145,6 @@ def crop_and_rotate_image(image_path, crop_properties, rotation_degrees=0):
         return None
 
 def augment_image(image, mode):
-    """Apply augmentation to image"""
     if mode == "flip":
         return ImageOps.mirror(image)
     elif mode == "rotate+10":
@@ -172,7 +158,6 @@ def augment_image(image, mode):
     return image
 
 def get_image_embedding(image):
-    """Get CLIP embedding for an image"""
     image_input = preprocess(image).unsqueeze(0).to(device)
     with torch.no_grad():
         embedding = model.encode_image(image_input)
@@ -180,7 +165,6 @@ def get_image_embedding(image):
     return embedding.cpu().numpy().flatten()
 
 def load_training_data_from_output():
-    """Load training data from existing output folder structure"""
     print("🔍 Loading training data from output folder...")
     embeddings = []
     labels = []
@@ -243,7 +227,6 @@ def load_training_data_from_output():
     return np.array(embeddings), labels
 
 def load_labeled_data_fallback():
-    """Fallback to load labeled training data from labeled_samples directory"""
     print("🔍 Loading labeled training data from labeled_samples (fallback)...")
     embeddings = []
     labels = []
@@ -273,7 +256,6 @@ def load_labeled_data_fallback():
     return np.array(embeddings), labels
 
 def get_classification_categories():
-    """Get all available classification categories from output folder or labeled_samples"""
     categories = []
     
     if os.path.exists(OUTPUT_BASE_DIR):
@@ -299,7 +281,6 @@ def get_classification_categories():
     return sorted(list(set(categories)))
 
 def create_classification_folders(case_output_dir, category_folder):
-    """Create all classification folders for a given case and category"""
     classification_categories = get_classification_categories()
     
     for class_name in classification_categories:
@@ -309,7 +290,6 @@ def create_classification_folders(case_output_dir, category_folder):
     print(f"📁 Created classification folders: {classification_categories}")
 
 def train_classifier():
-    """Train the classifier on data from output folder"""
     print("🧠 Training improved classifier from output folder...")
     X_train, y_train = load_training_data_from_output()
     
@@ -324,7 +304,6 @@ def train_classifier():
     return classifier
 
 def classify_image(classifier, image):
-    """Classify a single image and return top predictions"""
     try:
         emb = get_image_embedding(image).reshape(1, -1)
         probs = classifier.predict_proba(emb)[0]
@@ -336,7 +315,6 @@ def classify_image(classifier, image):
         return "Unknown"
 
 def process_images_from_slide(slide, case_name, classifier, should_classify=True):
-    """Process images from a slide based on its category"""
     category = slide.get('assumedCategory', 'UNKNOWN')
     images = slide.get('images', [])
     
@@ -396,7 +374,6 @@ def process_images_from_slide(slide, case_name, classifier, should_classify=True
                 os.unlink(temp_path)
 
 def process_json_file(json_path, classifier):
-    """Process a single JSON file"""
     try:
         with open(json_path, 'r') as f:
             data = json.load(f)
@@ -423,7 +400,6 @@ def process_json_file(json_path, classifier):
         print(f"❌ Failed to process {json_path}: {e}")
 
 def main():
-    """Main processing function"""
     print("🚀 Starting improved JSON image processing...")
     print("📈 Using existing output folder for enhanced training data!")
     

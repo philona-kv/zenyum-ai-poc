@@ -1,0 +1,32 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env
+.venv/
+
+# OS/filesystem
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Model artifacts
+trained_classifier.pkl
+model_metadata.json
+
+# Generated outputs and local data
+output/
+inputJsons/
+fileInput/
+
+# Logs
+logs/
+*.log
+
